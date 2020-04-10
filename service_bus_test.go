@@ -59,7 +59,7 @@ func TestMessage_SynchronousSubscribe(t *testing.T) {
 		t.Log("Error in SynchronousSubscribe Function")
 		t.Error(err)
 	}
-	var r Receiver
+	var r Subscriber
 	r = Message{
 		Connection:        nc,
 		EncodedConnection: nil,

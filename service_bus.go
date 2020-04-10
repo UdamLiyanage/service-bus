@@ -10,7 +10,7 @@ type (
 		PublishJSON() (bool, error)
 	}
 
-	Receiver interface {
+	Subscriber interface {
 		SynchronousSubscribe() (*nats.Subscription, error)
 		AsynchronousSubscribe(handler nats.MsgHandler) (*nats.Subscription, error)
 		QueueSubscribe(handler nats.MsgHandler, queueName string) (*nats.Subscription, error)
