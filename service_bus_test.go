@@ -1,6 +1,7 @@
 package service_bus
 
 import (
+	"github.com/nats-io/nats.go"
 	"testing"
 )
 
@@ -75,6 +76,38 @@ func TestMessage_SynchronousSubscribe(t *testing.T) {
 	}
 	if sub.Subject != "test.package" || !sub.IsValid() {
 		t.Log("Error in SynchronousSubscribe Function")
+		t.Error("Subject is wrong or invalid!")
+	}
+	_ = sub.Unsubscribe()
+	nc.Close()
+}
+
+func TestMessage_AsynchronousSubscribe(t *testing.T) {
+	nc, err := SingleNodeConnect("localhost:4222", "test-conn")
+	if err != nil {
+		t.Log("Error in AsynchronousSubscribe Function")
+		t.Error(err)
+	}
+	var r Subscriber
+	r = Message{
+		Connection:        nc,
+		EncodedConnection: nil,
+		Message:           nil,
+		Type:              "test-message",
+		Subject:           "test.package",
+		Payload:           nil,
+	}
+	var h nats.MsgHandler
+	h = func(msg *nats.Msg) {
+		println("Message: ", msg.Data)
+	}
+	sub, err := r.AsynchronousSubscribe(h)
+	if err != nil {
+		t.Log("Error in AsynchronousSubscribe Function")
+		t.Error(err)
+	}
+	if sub.Subject != "test.package" || !sub.IsValid() {
+		t.Log("Error in AsynchronousSubscribe Function")
 		t.Error("Subject is wrong or invalid!")
 	}
 	_ = sub.Unsubscribe()
