@@ -14,7 +14,8 @@ type (
 		SynchronousSubscribe() (*nats.Subscription, error)
 		AsynchronousSubscribe(handler nats.MsgHandler) (*nats.Subscription, error)
 		QueueSubscribe(handler nats.MsgHandler, queueName string) (*nats.Subscription, error)
-		//Unsubscribe() (bool, error)
+		JSONEncodedQueueSubscribe(handler nats.MsgHandler, queueName string) (*nats.Subscription, error)
+		JSONEncodedAsynchronousSubscribe(handler nats.MsgHandler) (*nats.Subscription, error)
 	}
 
 	Message struct {
@@ -57,8 +58,24 @@ func (m Message) AsynchronousSubscribe(handler nats.MsgHandler) (*nats.Subscript
 	return sub, nil
 }
 
+func (m Message) JSONEncodedAsynchronousSubscribe(handler nats.MsgHandler) (*nats.Subscription, error) {
+	sub, err := m.EncodedConnection.Subscribe(m.Subject, handler)
+	if err != nil {
+		return nil, err
+	}
+	return sub, nil
+}
+
 func (m Message) QueueSubscribe(handler nats.MsgHandler, queueName string) (*nats.Subscription, error) {
 	sub, err := m.Connection.QueueSubscribe(m.Subject, queueName, handler)
+	if err != nil {
+		return nil, err
+	}
+	return sub, nil
+}
+
+func (m Message) JSONEncodedQueueSubscribe(handler nats.MsgHandler, queueName string) (*nats.Subscription, error) {
+	sub, err := m.EncodedConnection.QueueSubscribe(m.Subject, queueName, handler)
 	if err != nil {
 		return nil, err
 	}
