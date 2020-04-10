@@ -1,4 +1,4 @@
-module service-bus
+module github.com/UdamLiyanage/service-bus
 
 go 1.13
 
