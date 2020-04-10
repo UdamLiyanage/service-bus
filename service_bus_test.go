@@ -145,3 +145,35 @@ func TestMessage_JSONEncodedAsynchronousSubscribe(t *testing.T) {
 	_ = sub.Unsubscribe()
 	ec.Close()
 }
+
+func TestMessage_QueueSubscribe(t *testing.T) {
+	nc, err := SingleNodeConnect("localhost:4222", "test-conn")
+	if err != nil {
+		t.Log("Error in QueueSubscribe Function")
+		t.Error(err)
+	}
+	var r Subscriber
+	r = Message{
+		Connection:        nc,
+		EncodedConnection: nil,
+		Message:           nil,
+		Type:              "test-message",
+		Subject:           "test.package",
+		Payload:           nil,
+	}
+	var h nats.MsgHandler
+	h = func(msg *nats.Msg) {
+		println("Message: ", msg.Data)
+	}
+	sub, err := r.QueueSubscribe(h, "test-queue")
+	if err != nil {
+		t.Log("Error in QueueSubscribe Function")
+		t.Error(err)
+	}
+	if sub.Subject != "test.package" || !sub.IsValid() {
+		t.Log("Error in QueueSubscribe Function")
+		t.Error("Subject is wrong or invalid!")
+	}
+	_ = sub.Unsubscribe()
+	nc.Close()
+}
