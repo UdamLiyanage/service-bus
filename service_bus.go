@@ -11,11 +11,11 @@ type (
 	}
 
 	Receiver interface {
-		SynchronousSubscribe() (bool, error)
-		AsynchronousSubscribe() (bool, error)
-		AutoUnsubscribe() (bool, error)
-		QueueSubscribe() (bool, error)
-		Unsubscribe() (bool, error)
+		SynchronousSubscribe() (*nats.Subscription, error)
+		//AsynchronousSubscribe() (bool, error)
+		//AutoUnsubscribe() (bool, error)
+		//QueueSubscribe() (bool, error)
+		//Unsubscribe() (bool, error)
 	}
 
 	Message struct {
@@ -40,4 +40,12 @@ func (m Message) PublishJSON() (bool, error) {
 		return false, err
 	}
 	return true, nil
+}
+
+func (m Message) SynchronousSubscribe() (*nats.Subscription, error) {
+	sub, err := m.Connection.SubscribeSync(m.Subject)
+	if err != nil {
+		return nil, err
+	}
+	return sub, err
 }
