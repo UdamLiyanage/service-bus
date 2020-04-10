@@ -113,3 +113,35 @@ func TestMessage_AsynchronousSubscribe(t *testing.T) {
 	_ = sub.Unsubscribe()
 	nc.Close()
 }
+
+func TestMessage_JSONEncodedAsynchronousSubscribe(t *testing.T) {
+	ec, err := JSONEncodedSingleConnect("localhost:4222", "test-conn")
+	if err != nil {
+		t.Log("Error in JSONEncodedAsynchronousSubscribe Function")
+		t.Error(err)
+	}
+	var r Subscriber
+	r = Message{
+		Connection:        nil,
+		EncodedConnection: ec,
+		Message:           nil,
+		Type:              "test-message",
+		Subject:           "test.package",
+		Payload:           nil,
+	}
+	var h nats.MsgHandler
+	h = func(msg *nats.Msg) {
+		println("Message: ", msg.Data)
+	}
+	sub, err := r.JSONEncodedAsynchronousSubscribe(h)
+	if err != nil {
+		t.Log("Error in JSONEncodedAsynchronousSubscribe Function")
+		t.Error(err)
+	}
+	if sub.Subject != "test.package" || !sub.IsValid() {
+		t.Log("Error in JSONEncodedAsynchronousSubscribe Function")
+		t.Error("Subject is wrong or invalid!")
+	}
+	_ = sub.Unsubscribe()
+	ec.Close()
+}
