@@ -10,6 +10,14 @@ type (
 		PublishJSON() (bool, error)
 	}
 
+	Receiver interface {
+		SynchronousSubscribe() (bool, error)
+		AsynchronousSubscribe() (bool, error)
+		AutoUnsubscribe() (bool, error)
+		QueueSubscribe() (bool, error)
+		Unsubscribe() (bool, error)
+	}
+
 	Message struct {
 		Connection        *nats.Conn
 		EncodedConnection *nats.EncodedConn
