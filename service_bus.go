@@ -12,9 +12,8 @@ type (
 
 	Receiver interface {
 		SynchronousSubscribe() (*nats.Subscription, error)
-		//AsynchronousSubscribe() (bool, error)
-		//AutoUnsubscribe() (bool, error)
-		//QueueSubscribe() (bool, error)
+		AsynchronousSubscribe(handler nats.MsgHandler) (*nats.Subscription, error)
+		QueueSubscribe(handler nats.MsgHandler, queueName string) (*nats.Subscription, error)
 		//Unsubscribe() (bool, error)
 	}
 
@@ -48,4 +47,20 @@ func (m Message) SynchronousSubscribe() (*nats.Subscription, error) {
 		return nil, err
 	}
 	return sub, err
+}
+
+func (m Message) AsynchronousSubscribe(handler nats.MsgHandler) (*nats.Subscription, error) {
+	sub, err := m.Connection.Subscribe(m.Subject, handler)
+	if err != nil {
+		return nil, err
+	}
+	return sub, nil
+}
+
+func (m Message) QueueSubscribe(handler nats.MsgHandler, queueName string) (*nats.Subscription, error) {
+	sub, err := m.Connection.QueueSubscribe(m.Subject, queueName, handler)
+	if err != nil {
+		return nil, err
+	}
+	return sub, nil
 }
