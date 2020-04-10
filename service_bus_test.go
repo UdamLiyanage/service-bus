@@ -1,6 +1,8 @@
 package service_bus
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestMessage_Publish(t *testing.T) {
 	nc, err := SingleNodeConnect("localhost:4222", "test-conn")
@@ -21,6 +23,7 @@ func TestMessage_Publish(t *testing.T) {
 		t.Log("Error in MessagePublish Function")
 		t.Error(err)
 	}
+	nc.Close()
 }
 
 func TestMessage_PublishJSON(t *testing.T) {
@@ -47,4 +50,33 @@ func TestMessage_PublishJSON(t *testing.T) {
 		t.Log("Error in MessagePublishJSON Function")
 		t.Error(err)
 	}
+	ec.Close()
+}
+
+func TestMessage_SynchronousSubscribe(t *testing.T) {
+	nc, err := SingleNodeConnect("localhost:4222", "test-conn")
+	if err != nil {
+		t.Log("Error in SynchronousSubscribe Function")
+		t.Error(err)
+	}
+	var r Receiver
+	r = Message{
+		Connection:        nc,
+		EncodedConnection: nil,
+		Message:           nil,
+		Type:              "test-message",
+		Subject:           "test.package",
+		Payload:           nil,
+	}
+	sub, err := r.SynchronousSubscribe()
+	if err != nil {
+		t.Log("Error in SynchronousSubscribe Function")
+		t.Error(err)
+	}
+	if sub.Subject != "test.package" || !sub.IsValid() {
+		t.Log("Error in SynchronousSubscribe Function")
+		t.Error("Subject is wrong or invalid!")
+	}
+	_ = sub.Unsubscribe()
+	nc.Close()
 }
