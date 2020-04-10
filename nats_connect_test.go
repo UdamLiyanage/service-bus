@@ -28,3 +28,11 @@ func TestClusterConnect(t *testing.T) {
 		t.Error("Not connected to server. SingleNodeConnect Function")
 	}
 }
+
+func TestJSONEncodedSingleConnect(t *testing.T) {
+	_, err := JSONEncodedSingleConnect("localhost:4222", "test-conn")
+	if err != nil {
+		t.Log("Error Occurred at SingleNodeConnect Function")
+		t.Error(err)
+	}
+}
