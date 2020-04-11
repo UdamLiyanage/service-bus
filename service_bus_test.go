@@ -14,10 +14,9 @@ func TestMessage_Publish(t *testing.T) {
 	msg := Message{
 		Connection:        nc,
 		EncodedConnection: nil,
-		Message:           nil,
+		Message:           []byte("test-message"),
 		Type:              "test-message",
 		Subject:           "test.package",
-		Payload:           []byte("test-message"),
 	}
 	status, err := msg.Publish()
 	if err != nil || status == false {
@@ -38,13 +37,19 @@ func TestMessage_PublishJSON(t *testing.T) {
 	payload["test_integer"] = 1
 	payload["test_bool"] = true
 	payload["test_float"] = 1.25
+	p := PayloadFormat{
+		Serial:  "test-serial",
+		Schema:  "test-schema",
+		Topic:   "test-topic",
+		Payload: payload,
+	}
 	msg := Message{
 		Connection:        nil,
 		EncodedConnection: ec,
 		Message:           nil,
 		Type:              "test-message",
 		Subject:           "test.package",
-		Payload:           nil,
+		Payload:           p,
 	}
 	status, err := msg.PublishJSON()
 	if err != nil || status == false {
@@ -67,7 +72,6 @@ func TestMessage_SynchronousSubscribe(t *testing.T) {
 		Message:           nil,
 		Type:              "test-message",
 		Subject:           "test.package",
-		Payload:           nil,
 	}
 	sub, err := r.SynchronousSubscribe()
 	if err != nil {
@@ -95,7 +99,6 @@ func TestMessage_AsynchronousSubscribe(t *testing.T) {
 		Message:           nil,
 		Type:              "test-message",
 		Subject:           "test.package",
-		Payload:           nil,
 	}
 	var h nats.MsgHandler
 	h = func(msg *nats.Msg) {
@@ -127,7 +130,6 @@ func TestMessage_JSONEncodedAsynchronousSubscribe(t *testing.T) {
 		Message:           nil,
 		Type:              "test-message",
 		Subject:           "test.package",
-		Payload:           nil,
 	}
 	var h nats.MsgHandler
 	h = func(msg *nats.Msg) {
@@ -159,7 +161,6 @@ func TestMessage_QueueSubscribe(t *testing.T) {
 		Message:           nil,
 		Type:              "test-message",
 		Subject:           "test.package",
-		Payload:           nil,
 	}
 	var h nats.MsgHandler
 	h = func(msg *nats.Msg) {
@@ -191,7 +192,6 @@ func TestMessage_JSONEncodedQueueSubscribe(t *testing.T) {
 		Message:           nil,
 		Type:              "test-message",
 		Subject:           "test.package",
-		Payload:           nil,
 	}
 	var h nats.MsgHandler
 	h = func(msg *nats.Msg) {

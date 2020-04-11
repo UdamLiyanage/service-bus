@@ -21,22 +21,29 @@ type (
 	Message struct {
 		Connection        *nats.Conn
 		EncodedConnection *nats.EncodedConn
-		Message           map[string]interface{}
+		Message           []byte
 		Type              string
 		Subject           string
-		Payload           []byte
+		Payload           PayloadFormat
+	}
+
+	PayloadFormat struct {
+		Serial  string
+		Schema  string
+		Topic   string
+		Payload map[string]interface{}
 	}
 )
 
 func (m Message) Publish() (bool, error) {
-	if err := m.Connection.Publish(m.Subject, m.Payload); err != nil {
+	if err := m.Connection.Publish(m.Subject, m.Message); err != nil {
 		return false, err
 	}
 	return true, nil
 }
 
 func (m Message) PublishJSON() (bool, error) {
-	if err := m.EncodedConnection.Publish(m.Subject, &m.Message); err != nil {
+	if err := m.EncodedConnection.Publish(m.Subject, &m.Payload); err != nil {
 		return false, err
 	}
 	return true, nil
